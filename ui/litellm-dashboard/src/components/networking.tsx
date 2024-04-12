@@ -233,7 +233,35 @@ export const teamDeleteCall = async (accessToken: String, teamID: String) => {
     console.error("Failed to delete key:", error);
     throw error;
   }
-  
+
+}
+
+export const modelDeleteCall = async (accessToken: String, modelID: String) => {
+  try {
+    const url = proxyBaseUrl ? `${proxyBaseUrl}/model/delete` : `/model/delete`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: modelID,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.text();
+      message.error("Failed to delete model: " + errorData);
+      throw new Error("Network response was not ok");
+    }
+    const data = await response.json();
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error("Failed to delete model:", error);
+    throw error;
+  }
 }
 
 export const userInfoCall = async (
@@ -241,7 +269,7 @@ export const userInfoCall = async (
   userID: String | null,
   userRole: String,
   viewAll: Boolean = false,
-  page: number | null, 
+  page: number | null,
   page_size: number | null
 ) => {
   try {
@@ -1016,7 +1044,7 @@ export const userUpdateUserCall = async (
     console.log("Form Values in userUpdateUserCall:", formValues); // Log the form values before making the API call
 
     const url = proxyBaseUrl ? `${proxyBaseUrl}/user/update` : `/user/update`;
-    let response_body = {...formValues};
+    let response_body = { ...formValues };
     if (userRole !== null) {
       response_body["user_role"] = userRole;
     }
@@ -1109,7 +1137,7 @@ export const slackBudgetAlertsHealthCheck = async (accessToken: String) => {
       // throw error with message
       throw new Error(errorData);
     }
-    
+
     const data = await response.json();
     message.success("Test Slack Alert worked - check your Slack!");
     console.log("Service Health Response:", data);
