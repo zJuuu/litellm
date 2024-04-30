@@ -8084,6 +8084,10 @@ async def login(request: Request):
             litellm_dashboard_ui += "/ui/"
         import jwt
 
+        # add expiration time to jwt token
+        expiration_time = int((datetime.utcnow() + timedelta(minutes=10)).timestamp())
+
+
         jwt_token = jwt.encode(
             {
                 "user_id": user_id,
@@ -8091,6 +8095,7 @@ async def login(request: Request):
                 "user_email": user_id,
                 "user_role": "app_admin",  # this is the path without sso - we can assume only admins will use this
                 "login_method": "username_password",
+                "exp": expiration_time,
             },
             "secret",
             algorithm="HS256",
